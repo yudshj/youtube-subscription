@@ -1,0 +1,16 @@
+{
+    "cookiefile": "youtube.com_cookies.txt",
+    "host": "https://<your_domain>",
+    "output": "downloads",
+    "proxy": "http://<your_proxy>",
+    "subscriptions": [
+        ["name_1", "https://rsshub.app/youtube/user/@<your_subscription1>"],
+        ["name_2", "https://rsshub.app/youtube/user/@<your_subscription2>"]
+    ],
+    "webdav": [
+        "http://host:port",
+        "<path>",
+        "admin",
+        "password"
+    ]
+}

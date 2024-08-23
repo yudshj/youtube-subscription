@@ -1,0 +1,6 @@
+beautifulsoup4
+yt-dlp
+lxml
+requests
+ipython
+webdav4
