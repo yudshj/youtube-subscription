@@ -45,8 +45,7 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
     for iii, item in enumerate(items):
         print('-' * 20, iii, '/', len(items), '-' * 20)
 
-        enclosure = item.find('podcast:transcript')
-        if enclosure:
+        if item.find('podcast:transcript'):
             continue
         
         # 获取视频的链接
@@ -59,22 +58,27 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
             # info_dict = ydl.extract_info(link, download=False)
             try:
                 info = ydl.extract_info(link, download=False)
-                lang = 'zh'
+                langs = ['zh-Hans', 'zh', 'en']
                 ext = 'vtt'
-                for i in info['subtitles'][lang]: # type: ignore
-                    if i['ext'] == ext:
-                        sub_url = i['url']
-                        break
+                sub_url = None
+                for lang in langs:
+                    if lang not in info['subtitles']: # type: ignore
+                        continue
+                    for i in info['subtitles'][lang]: # type: ignore
+                        if i['ext'] == ext:
+                            sub_url = i['url']
+                            break
+                assert sub_url is not None
                 # download vtt to downloads/vtt/NAME/ID.vtt
                 sub_path = os.path.join(OUTPUT_DIR, 'vtt', name)
                 if not os.path.exists(sub_path):
                     os.makedirs(sub_path)
-                sub_filename = info['id'] + '.' + ext
+                sub_filename = info['id'] + '.' + ext # type: ignore
                 sub_path = os.path.join(sub_path, sub_filename)
                 with open(sub_path, 'wb') as f:
                     f.write(requester.get(sub_url).content)
                 xml_sub_url = BASE_URL + '/vtt/' + name + '/' + sub_filename
-                _tag = soup.new_tag('podcast:transcript', url=xml_sub_url, type='text/vtt')
+                _tag = soup.new_tag('podcast:transcript', url=xml_sub_url, type='text/vtt', rel="captions")
                 item.append(_tag)
                 save_feed(soup, xml_path)
             except KeyboardInterrupt as e:

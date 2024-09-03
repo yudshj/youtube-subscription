@@ -19,9 +19,18 @@ def main():
     # 设置代理
     requester.proxies.update({"http": PROXY, "https": PROXY})
 
+    new_video = False
+
     # 遍历订阅列表并下载视频
     for name, feed_url in SUBSCRIBTIONS_LIST:
-        update_rss(name, feed_url, requester, ydl_opts)
+        if update_rss(name, feed_url, requester, ydl_opts):
+            new_video = True
+        
+    if new_video:
+        return 0
+    else:
+        logger.warning("No new videos found")
+        return 1
 
 def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     # 将RSS feed保存到文件
@@ -39,8 +48,10 @@ def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     with open(xml_path, 'w') as f:
         f.write(str(soup))
 
-def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: dict):
+def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: dict) -> bool:
+    new_video = False
     logger.info(f"Downloading videos from {name} feed")
+    print(f"[RSS] Downloading videos from {name} feed")
 
     # 从URL获取最新的XML数据
     response = requester.get(feed_url)
@@ -99,6 +110,7 @@ def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: 
 
             # add item to channel
             soup_old_channel.insert(10 + i, item)
+            new_video = True
     
     # import IPython
     # IPython.embed()
@@ -106,7 +118,8 @@ def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: 
     # 保存新的RSS feed
     sort_by_published_date(soup_old_channel)
     save_feed(soup, xml_path)
+    return new_video
 
 
 if __name__ == "__main__":
-    main()
+    exit(main())

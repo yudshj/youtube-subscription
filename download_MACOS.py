@@ -67,9 +67,10 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
 
     # 遍历所有item并下载视频
     items = soup.find_all("item")
+    downloaded = False
     # 遍历所有RSS feed中的item（视频条目）
     for iii, item in enumerate(items):
-        print('-' * 20, iii, '/', len(items), '-' * 20)
+        logger.info('Processing item %d of %d', iii + 1, len(items))
         
         # # 获取每个item的描述文本
         # description = item.find("description").text
@@ -89,6 +90,7 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
         link = item.find("link").text
         # 记录即将下载的视频链接
         logger.info("Downloading video %s", link)
+        downloaded = True
         
         # 使用yt_dlp的YoutubeDL实例来下载视频信息，并尝试下载
         flag = False
@@ -101,7 +103,7 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
                 continue
             flag = True
             TIME = 3 + random.random() * 2
-            print(f"Sleeping for {TIME} seconds...")
+            logger.info(f"Sleeping for {TIME} seconds...")
             time.sleep(TIME)
             break
         if not flag:
@@ -147,7 +149,41 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
                 new_image = soup.new_tag('itunes:image', href=image)
                 item.append(new_image)
 
+        if not item.find('podcast:transcript'):
+            try:
+                langs = ['zh-Hans', 'zh', 'en']
+                ext = 'vtt'
+                sub_url = None
+                for lang in langs:
+                    if lang not in info_dict['subtitles']: # type: ignore
+                        continue
+                    for i in info_dict['subtitles'][lang]: # type: ignore
+                        if i['ext'] == ext:
+                            sub_url = i['url']
+                            break
+                assert sub_url is not None
+                # download vtt to downloads/vtt/NAME/ID.vtt
+                sub_path = os.path.join(OUTPUT_DIR, 'vtt', name)
+                if not os.path.exists(sub_path):
+                    os.makedirs(sub_path)
+                sub_filename = info_dict['id'] + '.' + ext # type: ignore
+                sub_path = os.path.join(sub_path, sub_filename)
+                with open(sub_path, 'wb') as f:
+                    f.write(requester.get(sub_url).content)
+                xml_sub_url = BASE_URL + '/vtt/' + name + '/' + sub_filename
+                _tag = soup.new_tag('podcast:transcript', url=xml_sub_url, type='text/vtt', rel="captions")
+                item.append(_tag)
+            except KeyboardInterrupt as e:
+                raise e
+            except:
+                pass
+
         save_feed(soup, xml_path)
+    
+    if downloaded:
+        print('[DOWNLOAD] Downloaded:', name)
+    else:
+        print('[DOWNLOAD] Skipped:', name)
 
 if __name__ == "__main__":
     main()
