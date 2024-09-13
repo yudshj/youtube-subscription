@@ -29,14 +29,14 @@ def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     if a:
         a[0].string = formatted_date
 
-    with open(xml_path, 'w') as f:
+    with open(xml_path, 'w', encoding='utf-8') as f:
         f.write(str(soup))
 
 def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_opts: dict):
     # 构建本地XML文件路径
     xml_path = os.path.join(OUTPUT_DIR, '@' + name + '.xml')
     # 读取本地XML文件
-    with open(xml_path, 'r') as f:
+    with open(xml_path, 'r', encoding='utf-8') as f:
         soup = bs4.BeautifulSoup(f, "xml")
 
     # 遍历所有item并下载视频
@@ -75,7 +75,7 @@ def download_videos(name: str, feed_url: str, requester: requests.Session, ydl_o
                     os.makedirs(sub_path)
                 sub_filename = info['id'] + '.' + ext # type: ignore
                 sub_path = os.path.join(sub_path, sub_filename)
-                with open(sub_path, 'wb') as f:
+                with open(sub_path, 'wb', encoding='utf-8') as f:
                     f.write(requester.get(sub_url).content)
                 xml_sub_url = BASE_URL + '/vtt/' + name + '/' + sub_filename
                 _tag = soup.new_tag('podcast:transcript', url=xml_sub_url, type='text/vtt', rel="captions")

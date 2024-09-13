@@ -20,12 +20,12 @@ def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     a = soup.find_all('lastBuildDate')
     if a:
         a[0].string = formatted_date
-    with open(xml_path, 'w') as f:
+    with open(xml_path, 'w', encoding='utf-8') as f:
         f.write(str(soup))
 
 def update_rss(name: str):
     xml_path = os.path.join(OUTPUT_DIR, "@" + name + ".xml")
-    with open(xml_path, 'r') as f:
+    with open(xml_path, 'r', encoding='utf-8') as f:
         soup = bs4.BeautifulSoup(f, "xml")
     soup_old_channel = soup.find("channel")
     assert soup_old_channel is not None

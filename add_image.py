@@ -25,7 +25,7 @@ def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     if a:
         a[0].string = formatted_date
 
-    with open(xml_path, 'w') as f:
+    with open(xml_path, 'w', encoding='utf-8') as f:
         f.write(str(soup))
 
 p = Path('downloads')

@@ -45,7 +45,7 @@ def save_feed(soup: bs4.BeautifulSoup, xml_path: str):
     if a:
         a[0].string = formatted_date
 
-    with open(xml_path, 'w') as f:
+    with open(xml_path, 'w', encoding='utf-8') as f:
         f.write(str(soup))
 
 def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: dict) -> bool:
@@ -61,7 +61,7 @@ def update_rss(name: str, feed_url: str, requester: requests.Session, ydl_opts: 
     xml_path = os.path.join(OUTPUT_DIR, "@" + name + ".xml")
 
     # 读取本地XML文件
-    with open(xml_path, 'r') as f:
+    with open(xml_path, 'r', encoding='utf-8') as f:
         soup = bs4.BeautifulSoup(f, "xml")
 
     # 获取旧RSS feed中的所有链接

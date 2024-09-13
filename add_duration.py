@@ -18,5 +18,5 @@ for xml in p.glob('*.xml'):
         aa = soup.new_tag('itunes:duration')
         aa.string = duration
         item.append(aa)
-    with open(xml.name, 'w') as f:
+    with open(xml.name, 'w', encoding='utf-8') as f:
         f.write(str(soup))

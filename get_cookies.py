@@ -10,7 +10,7 @@ ydl_opts = {
 
 ydl = YoutubeDL(ydl_opts)
 
-with open('youtube.com_cookies.txt', 'w') as f:
+with open('youtube.com_cookies.txt', 'w', encoding='utf-8') as f:
     f.write('''# Netscape HTTP Cookie File
 # http://curl.haxx.se/rfc/cookie_spec.html
 # This is a generated file!  Do not edit.\n\n''')

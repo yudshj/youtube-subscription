@@ -24,11 +24,11 @@ print(temp_filepath)
 print(temp_filepath)
 
 def save(soup):
-    with open(f'./downloads/@{NAME}.xml', 'w') as f:
+    with open(f'./downloads/@{NAME}.xml', 'w', encoding='utf-8') as f:
         f.write(str(soup))
 
 def main():
-    with open(f'./downloads/@{NAME}.xml', 'r') as f:
+    with open(f'./downloads/@{NAME}.xml', 'r', encoding='utf-8') as f:
         soup = bs4.BeautifulSoup(f, "xml")
 
     channel = soup.find("channel")
@@ -38,10 +38,10 @@ def main():
         shell_command = f'yt-dlp --flat-playlist --print id {PLAYLIST_URL}'
         output = subprocess.check_output(shell_command, shell=True)
         input_fp = output.decode().split('\n')
-        with open(temp_filepath, 'w') as f:
+        with open(temp_filepath, 'w', encoding='utf-8') as f:
             f.write('\n'.join(input_fp))
 
-    with open(temp_filepath, 'r') as fp:
+    with open(temp_filepath, 'r', encoding='utf-8') as fp:
         lines = fp.readlines()
 
     assert channel is not None

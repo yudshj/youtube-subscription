@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 # 初始化日志记录器
 # 读取配置文件
-with open("config.json") as fp:
+with open("config.json", encoding='utf-8') as fp:
     CONFIG = json.load(fp)
 
 # 从配置文件中获取配置信息
@@ -26,7 +26,7 @@ WEBDAV_HOST, WEBDAV_PATH, WEBDAV_USER, WEBDAV_PASS = WEBDAV
 
 ydl_opts = {
     # "cookiefile": COOKIEFILE,
-    "cookiesfrombrowser": ['chrome'],
+    "cookiesfrombrowser": ['firefox'],
     "proxy": PROXY,
     "format": "bestaudio/best",
     "postprocessors": [
